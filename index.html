@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>航空物料問答比賽</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #ffffff;
+      color: #111111;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-weight: 300;
+      line-height: 1.4;
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f0f0f0;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #aaa;
+    }
+
+    .glass-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.98);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+      z-index: 100;
+      padding: 1.25rem 2rem;
+      transition: all 0.3s ease;
+    }
+
+    .glass-nav.scrolled {
+      background: #ffffff;
+      padding: 0.875rem 2rem;
+      border-bottom-color: rgba(0, 0, 0, 0.08);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.06);
+    }
+
+    .nav-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.1rem;
+      letter-spacing: 0.3em;
+      font-weight: 400;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #1f1f1f, #3a3a3a);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+
+    .logo:hover {
+      opacity: 0.8;
+      letter-spacing: 0.32em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      list-style: none;
+    }
+
+    .nav-item > a {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #1a1a1a;
+      text-decoration: none;
+      transition: all 0.3s;
+      padding: 0.6rem 0.75rem;
+      border-radius: 6px;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .nav-item > a:hover {
+      background: rgba(0, 0, 0, 0.03);
+      color: #000;
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+      z-index: 300;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 1.5px;
+      background: #111;
+      border-radius: 2px;
+      transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      transform-origin: center;
+    }
+
+    @media (max-width: 900px) {
+      .nav-links {
+        display: none;
+      }
+      .hamburger {
+        display: flex;
+      }
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      width: 100%;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 1.5rem;
+      }
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8rem 0 4rem;
+      min-height: 100vh;
+    }
+
+    .quiz-container {
+      width: 100%;
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    .quiz-card {
+      background: #ffffff;
+      border: 1px solid #eaeaea;
+      border-radius: 16px;
+      padding: 2.5rem 2.5rem 2rem;
+      box-shadow: 0 12px 40px -8px rgba(0, 0, 0, 0.06);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .quiz-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: #111;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+
+    .quiz-card.active::before {
+      transform: scaleX(1);
+    }
+
+    @media (max-width: 640px) {
+      .quiz-card {
+        padding: 1.75rem 1.5rem 1.5rem;
+      }
+    }
+
+    .progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .progress-track {
+      flex: 1;
+      height: 3px;
+      background: #f0f0f0;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #111;
+      width: 0%;
+      transition: width 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      border-radius: 4px;
+    }
+
+    .progress-text {
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      color: #9b9b9b;
+      font-weight: 400;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .question-text {
+      font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+      font-weight: 380;
+      line-height: 1.5;
+      letter-spacing: -0.01em;
+      color: #111;
+      margin-bottom: 2rem;
+      padding-right: 0.5rem;
+    }
+
+    .question-text .q-num {
+      display: inline-block;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      color: #bfbfbf;
+      font-weight: 400;
+      margin-right: 0.75rem;
+      text-transform: uppercase;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+      list-style: none;
+    }
+
+    .option-btn {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      background: #fafafa;
+      border: 1px solid #f0f0f0;
+      border-radius: 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 380;
+      color: #2c2c2c;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      text-align: left;
+      width: 100%;
+      letter-spacing: -0.01em;
+      line-height: 1.4;
+      position: relative;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      border-color: #d0d0d0;
+      background: #ffffff;
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    }
+
+    .option-btn .opt-letter {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: #888;
+      flex-shrink: 0;
+      transition: all 0.25s;
+    }
+
+    .option-btn:hover:not(:disabled) .opt-letter {
+      border-color: #111;
+      color: #111;
+    }
+
+    .option-btn.selected {
+      border-color: #111;
+      background: #ffffff;
+      box-shadow: 0 0 0 1px #111;
+    }
+
+    .option-btn.selected .opt-letter {
+      background: #111;
+      color: #fff;
+      border-color: #111;
+    }
+
+    .option-btn.correct {
+      border-color: #1a7f4b;
+      background: #f0faf4;
+      box-shadow: 0 0 0 1px #1a7f4b;
+    }
+
+    .option-btn.correct .opt-letter {
+      background: #1a7f4b;
+      color: #fff;
+      border-color: #1a7f4b;
+    }
+
+    .option-btn.wrong {
+      border-color: #c0392b;
+      background: #fdf3f2;
+      box-shadow: 0 0 0 1px #c0392b;
+    }
+
+    .option-btn.wrong .opt-letter {
+      background: #c0392b;
+      color: #fff;
+      border-color: #c0392b;
+    }
+
+    .option-btn:disabled {
+      cursor: default;
+      opacity: 0.9;
+    }
+
+    .feedback {
+      min-height: 2rem;
+      font-size: 0.85rem;
+      font-weight: 400;
+      padding: 0.5rem 0 0.5rem 1rem;
+      border-left: 3px solid transparent;
+      color: #555;
+      transition: all 0.3s;
+      letter-spacing: -0.01em;
+      line-height: 1.5;
+      margin-bottom: 0.5rem;
+    }
+
+    .feedback.correct-fb {
+      border-left-color: #1a7f4b;
+      color: #1a7f4b;
+    }
+
+    .feedback.wrong-fb {
+      border-left-color: #c0392b;
+      color: #c0392b;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.875rem 2rem;
+      background: #111;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      border: none;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      gap: 8px;
+      min-width: 140px;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #333;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-primary:disabled {
+      background: #d0d0d0;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.875rem 2rem;
+      background: transparent;
+      color: #555;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 1px solid #d0d0d0;
+      border-radius: 6px;
+      transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      gap: 8px;
+    }
+
+    .btn-ghost:hover:not(:disabled) {
+      border-color: #111;
+      color: #111;
+      transform: translateY(-2px);
+    }
+
+    .btn-ghost:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .action-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    @media (max-width: 480px) {
+      .action-row {
+        flex-direction: column-reverse;
+      }
+      .action-row .btn-primary,
+      .action-row .btn-ghost {
+        width: 100%;
+      }
+    }
+
+    .result-screen {
+      display: none;
+    }
+
+    .result-screen.active {
+      display: block;
+    }
+
+    .result-card {
+      text-align: center;
+      padding: 2.5rem 2rem;
+    }
+
+    .result-title {
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      font-weight: 300;
+      letter-spacing: -0.02em;
+      color: #111;
+      margin-bottom: 0.5rem;
+    }
+
+    .result-sub {
+      font-size: 0.9rem;
+      color: #9b9b9b;
+      font-weight: 300;
+      margin-bottom: 2rem;
+    }
+
+    .score-display {
+      font-size: 4rem;
+      font-weight: 200;
+      letter-spacing: -0.04em;
+      color: #111;
+      line-height: 1;
+      margin-bottom: 0.25rem;
+    }
+
+    .score-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #bbb;
+      font-weight: 400;
+      margin-bottom: 2rem;
+    }
+
+    .result-list {
+      text-align: left;
+      margin: 2rem 0;
+      border-top: 1px solid #f0f0f0;
+      padding-top: 1.5rem;
+    }
+
+    .result-item {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid #f5f5f5;
+      align-items: flex-start;
+    }
+
+    .result-item:last-child {
+      border-bottom: none;
+    }
+
+    .result-item .item-marker {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-top: 0.1rem;
+    }
+
+    .result-item .item-marker.correct {
+      background: #e8f5ee;
+      color: #1a7f4b;
+    }
+
+    .result-item .item-marker.wrong {
+      background: #fdecea;
+      color: #c0392b;
+    }
+
+    .result-item .item-content {
+      flex: 1;
+    }
+
+    .result-item .item-question {
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: #111;
+      line-height: 1.5;
+      margin-bottom: 0.2rem;
+    }
+
+    .result-item .item-answer {
+      font-size: 0.8rem;
+      color: #888;
+      font-weight: 300;
+    }
+
+    .result-item .item-answer strong {
+      font-weight: 500;
+      color: #333;
+    }
+
+    .result-actions {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
+    /* 題庫面板 */
+    .pool-panel {
+      display: none;
+      max-height: 70vh;
+      overflow-y: auto;
+      margin-top: 1rem;
+      border-top: 1px solid #f0f0f0;
+      padding-top: 1.5rem;
+      text-align: left;
+    }
+
+    .pool-panel.visible {
+      display: block;
+    }
+
+    .pool-item {
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #f5f5f5;
+      font-size: 0.85rem;
+      color: #333;
+      line-height: 1.5;
+    }
+
+    .pool-item:last-child {
+      border-bottom: none;
+    }
+
+    .pool-item .pool-num {
+      display: inline-block;
+      font-size: 0.7rem;
+      color: #bbb;
+      letter-spacing: 0.1em;
+      margin-right: 0.5rem;
+      font-weight: 400;
+    }
+
+    .pool-item .pool-answer {
+      color: #1a7f4b;
+      font-weight: 400;
+      margin-left: 0.25rem;
+    }
+
+    .fade-in {
+      animation: fadeInUp 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .footer-mini {
+      text-align: center;
+      padding: 2rem 0 1.5rem;
+      font-size: 10px;
+      color: #bbb;
+      letter-spacing: 0.08em;
+      border-top: 1px solid #f5f5f5;
+      margin-top: 2rem;
+    }
+
+    .footer-mini a {
+      color: #aaa;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .footer-mini a:hover {
+      color: #111;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="glass-nav" id="navbar">
+    <div class="nav-container">
+      <a href="#" class="logo">
+        <i data-lucide="plane" style="width:20px;height:20px;stroke-width:1.5;color:#111;"></i>
+        航空物料問答比賽
+      </a>
+      <ul class="nav-links">
+        <li class="nav-item"><a onclick="resetQuiz(event)"><i data-lucide="rotate-ccw"></i> 重新開始</a></li>
+        <li class="nav-item"><a onclick="togglePool(event)"><i data-lucide="layers"></i> 題庫</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="選單">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main>
+    <div class="container">
+      <div class="quiz-container">
+
+        <!-- 題庫面板（預設隱藏） -->
+        <div id="poolPanel" class="pool-panel quiz-card" style="display:none; margin-bottom: 1.5rem;">
+          <div style="font-size: 0.85rem; letter-spacing: 0.2em; text-transform: uppercase; color: #999; margin-bottom: 1rem;">題庫總覽</div>
+          <div id="poolList"></div>
+        </div>
+
+        <!-- 答題界面 -->
+        <div id="quizScreen" class="quiz-card active fade-in">
+          <div class="progress-wrap">
+            <div class="progress-track">
+              <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+            </div>
+            <span class="progress-text" id="progressText">1 / 3</span>
+          </div>
+
+          <div class="question-text" id="questionText">
+            <span class="q-num" id="qNum">Q1</span>
+            載入中...
+          </div>
+
+          <ul class="options-list" id="optionsList"></ul>
+
+          <div class="feedback" id="feedback"></div>
+
+          <div class="action-row">
+            <button class="btn-ghost" id="skipBtn" onclick="skipQuestion()">
+              <i data-lucide="skip-forward"></i> 跳過
+            </button>
+            <button class="btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>
+              下一題 <i data-lucide="arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- 結算界面 -->
+        <div id="resultScreen" class="quiz-card result-card fade-in" style="display:none;">
+          <div class="result-title" id="resultTitle">挑戰完成</div>
+          <div class="result-sub" id="resultSub">你答對了 2 / 3 題</div>
+          <div class="score-display" id="scoreDisplay">2</div>
+          <div class="score-label">正確題數</div>
+
+          <div class="result-list" id="resultList"></div>
+
+          <div class="result-actions">
+            <button class="btn-primary" onclick="resetQuiz()">
+              <i data-lucide="refresh-cw"></i> 再來一次
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <div class="footer-mini">
+    <span>© 2026 航空物料問答比賽 · 基於 Dubhe Nexus 設計語言</span>
+  </div>
+
+  <script>
+    // ============================================================
+    //  題庫 — 約 40 題，圍繞航空器物料（繁體中文）
+    // ============================================================
+    const QUESTION_POOL = [
+      {
+        question: "雖然節約重量非常關鍵，但哪種重型材料仍因其極致的硬度而被用於飛機起落架？",
+        options: ["鋁合金", "高強度鋼", "碳纖維增強複合材料", "鈦合金"],
+        answer: 1,
+        explanation: "起落架需要承受極高的衝擊載荷，高強度鋼在保持相對輕量化的同時提供了無與倫比的硬度與韌性。"
+      },
+      {
+        question: "在波音 787 和空中巴士 A350 等現代客機中，哪種主要材料佔到了機體結構重量的 50% 以上？",
+        options: ["鋁合金", "鈦合金", "碳纖維增強複合材料 (CFRP)", "高強度鋼"],
+        answer: 2,
+        explanation: "CFRP 大幅降低了機體重量，同時提升了抗疲勞與耐腐蝕性能，是現代寬體客機的核心材料。"
+      },
+      {
+        question: "為什麼凱夫拉（芳綸纖維）常用於機翼前緣和貨艙內襯？",
+        options: ["極高的抗磨損與抗衝擊性能", "極佳的電導率", "極高的熔點", "優異的透波性能"],
+        answer: 0,
+        explanation: "凱夫拉以其出色的抗衝擊和抗磨損能力著稱，能有效抵禦鳥撞和碎片衝擊。"
+      },
+      {
+        question: "噴氣發動機渦輪葉片的工作溫度高於大多數金屬的熔點，哪類材料能防止它們熔化？",
+        options: ["鋁合金", "鎳基高溫合金 / 陶瓷基複合材料 (CMCs)", "碳纖維增強複合材料", "鎂合金"],
+        answer: 1,
+        explanation: "鎳基高溫合金和陶瓷基複合材料具備卓越的高溫強度與抗蠕變性能，是熱端部件的首選。"
+      },
+      {
+        question: "為什麼飛機的雷達罩（機頭）使用玻璃纖維製作，而不是金屬或碳纖維？",
+        options: ["更輕", "更便宜", "允許無線電/雷達信號無阻擋穿透", "更耐高溫"],
+        answer: 2,
+        explanation: "玻璃纖維具有優異的透波性能，確保雷達信號不受遮擋，同時保護內部天線。"
+      },
+      {
+        question: "將哪種金屬元素加入鋁中，可以製成具有高耐腐蝕性的超輕合金？",
+        options: ["鐵", "銅", "鋰 (Lithium)", "鋅"],
+        answer: 2,
+        explanation: "鋁鋰合金比傳統鋁合金輕約 10%，同時剛度更高，是新一代航空材料的明星。"
+      },
+      {
+        question: "當碳纖維與金屬連接時，緊固件首選哪種金屬以防止電化學腐蝕？",
+        options: ["鋁", "鋼", "鈦 (Titanium)", "銅"],
+        answer: 2,
+        explanation: "鈦與碳纖維的電勢差較小，能有效避免電偶腐蝕，同時兼具高強度與輕量化。"
+      },
+      {
+        question: "飛機蒙皮廣泛使用的 2024 和 7075 鋁合金，其主要強化元素是什麼？",
+        options: ["銅和鋅", "鎂和矽", "鋰和錳", "鐵和鎳"],
+        answer: 0,
+        explanation: "2024 鋁合金以銅為主要強化元素，7075 則以鋅為主，二者均為高強度航空鋁材。"
+      },
+      {
+        question: "哪種材料因其優異的比強度和抗疲勞性能，被用於製造現代直升機旋翼槳葉？",
+        options: ["玻璃纖維", "碳纖維複合材料", "不鏽鋼", "鋁合金"],
+        answer: 1,
+        explanation: "碳纖維複合材料可設計性強，能有效抵抗旋翼運行中的交變載荷與疲勞。"
+      },
+      {
+        question: "航空發動機風扇葉片採用鈦合金或碳纖維複合材料，主要是為了什麼？",
+        options: ["提高耐溫能力", "減輕重量並提高效率", "降低成本", "增強導電性"],
+        answer: 1,
+        explanation: "減輕風扇葉片重量可顯著降低發動機整體重量，提高推重比和燃油效率。"
+      },
+      {
+        question: "在飛機結構中，哪種材料常被用作防火隔板，因其出色的耐高溫和阻燃性？",
+        options: ["聚乙烯", "聚碳酸酯", "酚醛樹脂複合材料", "尼龍"],
+        answer: 2,
+        explanation: "酚醛樹脂具有優異的阻燃、低煙和耐高溫特性，廣泛用於飛機內飾和防火隔板。"
+      },
+      {
+        question: "哪種輕質金屬因其良好的鑄造性能和耐腐蝕性，常用於製造飛機發動機的機匣？",
+        options: ["鎂合金", "鈦合金", "鋁合金", "銅合金"],
+        answer: 1,
+        explanation: "鈦合金機匣強度高、耐腐蝕，且能承受發動機的高溫高壓環境。"
+      },
+      {
+        question: "飛機座艙玻璃通常採用哪種材料，以承受座艙增壓和鳥撞？",
+        options: ["普通玻璃", "亞克力（有機玻璃）", "聚碳酸酯", "石英玻璃"],
+        answer: 1,
+        explanation: "亞克力（有機玻璃）具有優異的抗衝擊性和光學透明度，且易於成型。"
+      },
+      {
+        question: "碳纖維複合材料中的「碳纖維」主要提供什麼？",
+        options: ["韌性", "強度與剛度", "耐腐蝕性", "導電性"],
+        answer: 1,
+        explanation: "碳纖維是增強相，提供極高的比強度和比模量；樹脂基體則負責傳遞載荷和保護纖維。"
+      },
+      {
+        question: "為什麼鈦合金在航空領域被稱為「太空金屬」？",
+        options: ["因為它很輕", "因為它耐高溫且比強度高", "因為它很便宜", "因為它容易加工"],
+        answer: 1,
+        explanation: "鈦合金比強度高、耐高溫、抗腐蝕，是航空航天的關鍵結構材料。"
+      },
+      {
+        question: "飛機剎車盤常採用碳-碳複合材料，主要是因為其？",
+        options: ["密度極低", "耐高溫且摩擦性能好", "成本低", "導電性好"],
+        answer: 1,
+        explanation: "碳-碳複合材料能承受剎車時產生的高溫，同時保持穩定的摩擦係數。"
+      },
+      {
+        question: "哪種材料常用於製造飛機的燃油箱？",
+        options: ["鋁合金", "橡膠", "碳纖維複合材料", "不鏽鋼"],
+        answer: 0,
+        explanation: "鋁合金具有良好的耐腐蝕性和成型性，且與燃油兼容，是傳統油箱的主要材料。"
+      },
+      {
+        question: "在複合材料中，預浸料是指？",
+        options: ["纖維與樹脂預先混合的半成品", "已經固化的複合材料", "純纖維布", "樹脂薄膜"],
+        answer: 0,
+        explanation: "預浸料是纖維浸漬樹脂後製成的半成品，便於鋪層和固化，廣泛用於航空構件。"
+      },
+      {
+        question: "飛機發動機的排氣尾噴管通常採用哪種材料？",
+        options: ["鋁合金", "鎳基高溫合金", "碳纖維複合材料", "鎂合金"],
+        answer: 1,
+        explanation: "尾噴管需要承受高溫高速氣流，鎳基高溫合金是首選。"
+      },
+      {
+        question: "哪種材料被用於製造飛機的靜電放電刷？",
+        options: ["銅", "鋁", "碳纖維", "不鏽鋼"],
+        answer: 2,
+        explanation: "碳纖維具有良好的導電性，同時耐腐蝕、重量輕，適合製作放電刷。"
+      },
+      {
+        question: "飛機機翼壁板廣泛採用哪種材料以減輕重量？",
+        options: ["鋁合金", "碳纖維複合材料", "鈦合金", "高強度鋼"],
+        answer: 1,
+        explanation: "碳纖維複合材料壁板可顯著減重，並提高抗疲勞性能。"
+      },
+      {
+        question: "哪種金屬在航空發動機中用於製造燃燒室火焰筒？",
+        options: ["鋁", "鎳基合金", "銅", "鎂"],
+        answer: 1,
+        explanation: "鎳基合金能承受燃燒室的高溫氧化和熱腐蝕環境。"
+      },
+      {
+        question: "航空線纜的絕緣層通常採用什麼材料？",
+        options: ["聚氯乙烯", "聚四氟乙烯 (PTFE)", "聚乙烯", "橡膠"],
+        answer: 1,
+        explanation: "PTFE 耐高溫、耐化學腐蝕且阻燃，是航空線纜絕緣的標準材料。"
+      },
+      {
+        question: "哪種材料被用於製造飛機的液壓管路？",
+        options: ["不鏽鋼", "鋁合金", "鈦合金", "銅"],
+        answer: 0,
+        explanation: "不鏽鋼液壓管耐高壓、耐腐蝕，且具有較長的疲勞壽命。"
+      },
+      {
+        question: "在航空複合材料中，環氧樹脂的主要作用是？",
+        options: ["增強", "基體粘接與傳遞載荷", "耐高溫", "導電"],
+        answer: 1,
+        explanation: "環氧樹脂作為基體，將纖維粘接在一起，並傳遞載荷。"
+      },
+      {
+        question: "飛機蒙皮與長桁之間常用的連接方式是什麼？",
+        options: ["焊接", "鉚接", "粘接", "螺栓連接"],
+        answer: 1,
+        explanation: "鉚接是飛機蒙皮與骨架連接最常用的方式，可靠且易於檢查。"
+      },
+      {
+        question: "哪種材料因其低密度和高比強度，被用於製造飛機座椅骨架？",
+        options: ["鋁合金", "鎂合金", "鈦合金", "碳纖維複合材料"],
+        answer: 0,
+        explanation: "鋁合金成本適中、加工性好，是座椅骨架的常見材料。"
+      },
+      {
+        question: "航空發動機的壓氣機葉片通常採用什麼材料？",
+        options: ["鋁合金", "鈦合金", "鎳基合金", "陶瓷"],
+        answer: 1,
+        explanation: "鈦合金在壓氣機段的溫度範圍內具有優異的比強度和抗腐蝕性。"
+      },
+      {
+        question: "哪種材料用於製造飛機的除冰帶？",
+        options: ["橡膠", "金屬", "複合材料", "塑料"],
+        answer: 0,
+        explanation: "橡膠除冰帶可充氣膨脹，破碎機翼表面的冰層。"
+      },
+      {
+        question: "在航空材料中，比強度是指？",
+        options: ["強度與密度之比", "強度與重量之比", "剛度與密度之比", "硬度與重量之比"],
+        answer: 0,
+        explanation: "比強度 = 強度 / 密度，是衡量材料輕量化效果的重要指標。"
+      },
+      {
+        question: "哪種材料被用於製造飛機的天線罩？",
+        options: ["玻璃纖維複合材料", "碳纖維複合材料", "鋁合金", "鈦合金"],
+        answer: 0,
+        explanation: "玻璃纖維透波性好，且強度滿足要求，是天線罩的經典材料。"
+      },
+      {
+        question: "航空發動機的渦輪盤通常採用哪種製造工藝？",
+        options: ["鑄造", "鍛造", "粉末冶金", "焊接"],
+        answer: 2,
+        explanation: "粉末冶金高溫合金渦輪盤組織均勻，性能優異，廣泛應用於現代發動機。"
+      },
+      {
+        question: "哪種材料在飛機上用於防火隔熱層？",
+        options: ["陶瓷纖維", "玻璃纖維", "碳纖維", "芳綸"],
+        answer: 0,
+        explanation: "陶瓷纖維耐高溫、導熱係數低，是防火隔熱的首選。"
+      },
+      {
+        question: "飛機上的「黑盒」外殼通常採用什麼材料？",
+        options: ["鋁合金", "鈦合金", "不鏽鋼", "高強度鋼"],
+        answer: 3,
+        explanation: "高強度鋼能承受墜毀衝擊、高溫和深海壓力，保護內部記錄數據。"
+      },
+      {
+        question: "哪種材料被用於製造飛機的螺旋槳？",
+        options: ["鋁合金", "碳纖維複合材料", "鈦合金", "鋼"],
+        answer: 1,
+        explanation: "碳纖維複合材料螺旋槳重量輕、強度高，且可設計性強。"
+      },
+      {
+        question: "航空材料中，疲勞裂紋擴展速率是衡量什麼性能的指標？",
+        options: ["靜強度", "抗疲勞性能", "耐腐蝕性", "硬度"],
+        answer: 1,
+        explanation: "疲勞裂紋擴展速率越低，材料抵抗裂紋擴展的能力越強。"
+      },
+      {
+        question: "哪種材料用於製造飛機的高壓壓氣機機匣？",
+        options: ["鋁合金", "鈦合金", "鎂合金", "銅合金"],
+        answer: 1,
+        explanation: "鈦合金機匣強度高、耐高溫，且能減輕重量。"
+      },
+      {
+        question: "在航空領域，CMC 是指？",
+        options: ["陶瓷基複合材料", "碳基複合材料", "金屬基複合材料", "聚合物基複合材料"],
+        answer: 0,
+        explanation: "CMC (Ceramic Matrix Composite) 陶瓷基複合材料，耐高溫性能極佳。"
+      },
+      {
+        question: "哪種材料用於製造飛機的起落架輪胎？",
+        options: ["天然橡膠", "合成橡膠", "矽膠", "聚氨酯"],
+        answer: 1,
+        explanation: "合成橡膠具有優異的耐磨、耐熱和抗衝擊性能，是航空輪胎的首選。"
+      },
+      {
+        question: "飛機結構中使用鈦合金的主要優勢是什麼？",
+        options: ["價格低廉", "比強度高且耐腐蝕", "易於加工", "導電性好"],
+        answer: 1,
+        explanation: "鈦合金比強度高、耐腐蝕，且與碳纖維兼容性好，是航空關鍵材料。"
+      }
+    ];
+
+    // ============================================================
+    //  遊戲狀態
+    // ============================================================
+    let currentQuestions = [];
+    let currentIndex = 0;
+    let userAnswers = [];
+    let answered = false;
+    let selectedOption = null;
+    let poolVisible = false;
+
+    const TOTAL_QUESTIONS = 3;
+
+    const quizScreen = document.getElementById('quizScreen');
+    const resultScreen = document.getElementById('resultScreen');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    const questionText = document.getElementById('questionText');
+    const qNum = document.getElementById('qNum');
+    const optionsList = document.getElementById('optionsList');
+    const feedback = document.getElementById('feedback');
+    const nextBtn = document.getElementById('nextBtn');
+    const skipBtn = document.getElementById('skipBtn');
+    const poolPanel = document.getElementById('poolPanel');
+    const poolList = document.getElementById('poolList');
+
+    // ============================================================
+    //  工具函數
+    // ============================================================
+    function shuffleArray(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function pickRandomQuestions(n) {
+      const shuffled = shuffleArray(QUESTION_POOL);
+      return shuffled.slice(0, n).map(q => {
+        const optionsWithIndex = q.options.map((opt, idx) => ({ opt, idx }));
+        const shuffledOptions = shuffleArray(optionsWithIndex);
+        const newOptions = shuffledOptions.map(item => item.opt);
+        const newAnswerIndex = shuffledOptions.findIndex(item => item.idx === q.answer);
+        return {
+          ...q,
+          options: newOptions,
+          answer: newAnswerIndex
+        };
+      });
+    }
+
+    // ============================================================
+    //  渲染題目
+    // ============================================================
+    function renderQuestion() {
+      const q = currentQuestions[currentIndex];
+      answered = false;
+      selectedOption = null;
+      feedback.textContent = '';
+      feedback.className = 'feedback';
+      nextBtn.disabled = true;
+      skipBtn.disabled = false;
+
+      progressFill.style.width = `${((currentIndex) / TOTAL_QUESTIONS) * 100}%`;
+      progressText.textContent = `${currentIndex + 1} / ${TOTAL_QUESTIONS}`;
+
+      qNum.textContent = `Q${currentIndex + 1}`;
+      questionText.innerHTML = `<span class="q-num">Q${currentIndex + 1}</span>${q.question}`;
+
+      optionsList.innerHTML = '';
+      const letters = ['A', 'B', 'C', 'D'];
+      q.options.forEach((opt, idx) => {
+        const li = document.createElement('li');
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.dataset.index = idx;
+        btn.innerHTML = `
+          <span class="opt-letter">${letters[idx]}</span>
+          <span>${opt}</span>
+        `;
+        btn.addEventListener('click', () => selectOption(idx));
+        li.appendChild(btn);
+        optionsList.appendChild(li);
+      });
+    }
+
+    // ============================================================
+    //  選擇選項
+    // ============================================================
+    function selectOption(index) {
+      if (answered) return;
+      const q = currentQuestions[currentIndex];
+
+      document.querySelectorAll('.option-btn').forEach((btn, i) => {
+        btn.classList.remove('selected');
+        if (i === index) btn.classList.add('selected');
+      });
+
+      selectedOption = index;
+      answered = true;
+
+      const allBtns = document.querySelectorAll('.option-btn');
+      allBtns.forEach((btn, i) => {
+        btn.disabled = true;
+        if (i === q.answer) {
+          btn.classList.add('correct');
+        } else if (i === index && i !== q.answer) {
+          btn.classList.add('wrong');
+        }
+      });
+
+      const isCorrect = index === q.answer;
+      if (isCorrect) {
+        feedback.textContent = '✓ 回答正確！' + (q.explanation ? ' ' + q.explanation : '');
+        feedback.className = 'feedback correct-fb';
+      } else {
+        feedback.textContent = '✗ 回答錯誤。正確答案是 ' + ['A', 'B', 'C', 'D'][q.answer] + '。' + (q.explanation ? ' ' + q.explanation : '');
+        feedback.className = 'feedback wrong-fb';
+      }
+
+      userAnswers.push({
+        question: q.question,
+        selected: index,
+        correct: q.answer,
+        options: q.options,
+        explanation: q.explanation
+      });
+
+      nextBtn.disabled = false;
+      skipBtn.disabled = true;
+
+      if (currentIndex === TOTAL_QUESTIONS - 1) {
+        nextBtn.innerHTML = '查看結果 <i data-lucide="award"></i>';
+      } else {
+        nextBtn.innerHTML = '下一題 <i data-lucide="arrow-right"></i>';
+      }
+      lucide.createIcons();
+    }
+
+    // ============================================================
+    //  跳過
+    // ============================================================
+    function skipQuestion() {
+      if (answered) return;
+      const q = currentQuestions[currentIndex];
+      answered = true;
+      selectedOption = -1;
+
+      const allBtns = document.querySelectorAll('.option-btn');
+      allBtns.forEach((btn, i) => {
+        btn.disabled = true;
+        if (i === q.answer) {
+          btn.classList.add('correct');
+        }
+      });
+
+      feedback.textContent = '⏭ 已跳過。正確答案是 ' + ['A', 'B', 'C', 'D'][q.answer] + '。' + (q.explanation ? ' ' + q.explanation : '');
+      feedback.className = 'feedback wrong-fb';
+
+      userAnswers.push({
+        question: q.question,
+        selected: -1,
+        correct: q.answer,
+        options: q.options,
+        explanation: q.explanation
+      });
+
+      nextBtn.disabled = false;
+      skipBtn.disabled = true;
+
+      if (currentIndex === TOTAL_QUESTIONS - 1) {
+        nextBtn.innerHTML = '查看結果 <i data-lucide="award"></i>';
+      } else {
+        nextBtn.innerHTML = '下一題 <i data-lucide="arrow-right"></i>';
+      }
+      lucide.createIcons();
+    }
+
+    // ============================================================
+    //  下一題 / 結算
+    // ============================================================
+    function nextQuestion() {
+      if (!answered) return;
+      if (currentIndex < TOTAL_QUESTIONS - 1) {
+        currentIndex++;
+        renderQuestion();
+        progressFill.style.width = `${(currentIndex / TOTAL_QUESTIONS) * 100}%`;
+      } else {
+        showResult();
+      }
+    }
+
+    // ============================================================
+    //  結算
+    // ============================================================
+    function showResult() {
+      quizScreen.style.display = 'none';
+      resultScreen.style.display = 'block';
+      poolPanel.style.display = 'none';
+      poolVisible = false;
+
+      const correctCount = userAnswers.filter(a => a.selected === a.correct).length;
+      const total = userAnswers.length;
+
+      document.getElementById('scoreDisplay').textContent = correctCount;
+      document.getElementById('resultSub').textContent = `你答對了 ${correctCount} / ${total} 題`;
+
+      const title = document.getElementById('resultTitle');
+      if (correctCount === total) {
+        title.textContent = '完美通關！';
+      } else if (correctCount >= total - 1) {
+        title.textContent = '非常出色！';
+      } else if (correctCount >= 1) {
+        title.textContent = '繼續努力！';
+      } else {
+        title.textContent = '再試一次吧';
+      }
+
+      const resultList = document.getElementById('resultList');
+      resultList.innerHTML = '';
+      userAnswers.forEach((a, i) => {
+        const isCorrect = a.selected === a.correct;
+        const selectedText = a.selected >= 0 ? a.options[a.selected] : '未作答';
+        const correctText = a.options[a.correct];
+
+        const item = document.createElement('div');
+        item.className = 'result-item';
+        item.innerHTML = `
+          <div class="item-marker ${isCorrect ? 'correct' : 'wrong'}">
+            ${isCorrect ? '✓' : '✗'}
+          </div>
+          <div class="item-content">
+            <div class="item-question">${i + 1}. ${a.question}</div>
+            <div class="item-answer">
+              你的答案：<strong>${selectedText}</strong>
+              ${!isCorrect ? ` · 正確答案：<strong>${correctText}</strong>` : ''}
+            </div>
+          </div>
+        `;
+        resultList.appendChild(item);
+      });
+
+      progressFill.style.width = '100%';
+      progressText.textContent = '完成';
+
+      lucide.createIcons();
+    }
+
+    // ============================================================
+    //  重置
+    // ============================================================
+    function resetQuiz(e) {
+      if (e) e.preventDefault();
+
+      quizScreen.style.display = 'block';
+      resultScreen.style.display = 'none';
+      poolPanel.style.display = 'none';
+      poolVisible = false;
+
+      currentQuestions = pickRandomQuestions(TOTAL_QUESTIONS);
+      currentIndex = 0;
+      userAnswers = [];
+      answered = false;
+      selectedOption = null;
+
+      progressFill.style.width = '0%';
+      progressText.textContent = `1 / ${TOTAL_QUESTIONS}`;
+
+      nextBtn.innerHTML = '下一題 <i data-lucide="arrow-right"></i>';
+      nextBtn.disabled = true;
+      skipBtn.disabled = false;
+
+      quizScreen.classList.add('fade-in');
+      setTimeout(() => quizScreen.classList.remove('fade-in'), 600);
+
+      renderQuestion();
+      lucide.createIcons();
+    }
+
+    // ============================================================
+    //  題庫面板
+    // ============================================================
+    function togglePool(e) {
+      if (e) e.preventDefault();
+      poolVisible = !poolVisible;
+
+      if (poolVisible) {
+        // 構建題庫列表
+        poolList.innerHTML = '';
+        QUESTION_POOL.forEach((q, i) => {
+          const item = document.createElement('div');
+          item.className = 'pool-item';
+          const correctLetter = ['A', 'B', 'C', 'D'][q.answer];
+          const correctText = q.options[q.answer];
+          item.innerHTML = `
+            <span class="pool-num">Q${i + 1}</span>
+            ${q.question}
+            <span class="pool-answer">→ ${correctLetter}. ${correctText}</span>
+          `;
+          poolList.appendChild(item);
+        });
+        poolPanel.style.display = 'block';
+        poolPanel.classList.add('fade-in');
+        // 如果結算畫面顯示中，則隱藏它
+        if (resultScreen.style.display === 'block') {
+          resultScreen.style.display = 'none';
+          quizScreen.style.display = 'block';
+          // 如果已經完成所有題目，重新渲染當前題目（或重置）
+          if (currentIndex >= TOTAL_QUESTIONS - 1 && answered) {
+            // 保持在最後一題，但可能需要重置為新一輪
+          }
+        }
+      } else {
+        poolPanel.style.display = 'none';
+        poolPanel.classList.remove('fade-in');
+        // 如果結算畫面原本是隱藏的，且我們剛剛隱藏了題庫，需恢復顯示
+        if (resultScreen.style.display === 'none' && quizScreen.style.display === 'none') {
+          quizScreen.style.display = 'block';
+        }
+      }
+      lucide.createIcons();
+    }
+
+    // ============================================================
+    //  初始化
+    // ============================================================
+    function init() {
+      window.addEventListener('scroll', () => {
+        const nav = document.getElementById('navbar');
+        if (window.scrollY > 20) {
+          nav.classList.add('scrolled');
+        } else {
+          nav.classList.remove('scrolled');
+        }
+      });
+
+      document.getElementById('hamburger').addEventListener('click', function() {
+        this.classList.toggle('active');
+      });
+
+      lucide.createIcons();
+      resetQuiz();
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
